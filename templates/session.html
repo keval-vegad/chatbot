@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Flask_Chat_App</title>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='styles/style.css')}}">
+</head>
+<body>
+
+<h3 style='color: #000;font-size: 30px;'>Hi I'm Parrot! <br/> Where are you travelling from?</h3>
+<div class="message_holder"></div>
+
+<form action="" method="POST">
+    <input type="text" class="message" placeholder="Messages"/>
+    <input type="submit"/>
+</form>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+<script type="text/javascript">
+      var socket = io.connect('http://' + document.domain + ':' + location.port);
+      socket.on( 'connect', function() {
+        socket.emit( 'connection', {
+          data: 'User Connected'
+        } )
+
+
+        var form = $( 'form' ).on( 'submit', function( e ) {
+          e.preventDefault()
+          let user_input = $( 'input.message' ).val()
+          socket.emit( 'user response', {
+            message : user_input
+          })
+          $( 'input.message' ).val( '' ).focus()
+        } )
+      } )
+      socket.on( 'print user response', function( msg ) {
+        console.log( msg )
+          $( 'h3' ).remove()
+          $( 'div.message_holder' ).append( '<div class="user"><b ;">'+'User'+'</b> '+msg.message+'</div>' )
+      })
+      socket.on( 'parrot response', function(pt) {
+        console.log( 'pt.message' )
+        $( 'div.message_holder' ).append( '<div class="parrot"><b ;">'+'Parrot'+'</b> '+ pt.message +'</div>' )
+      })
+</script>
+
+</body>
+</html>
